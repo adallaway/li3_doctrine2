@@ -1,11 +1,7 @@
 #!/usr/bin/env php
 <?php
-$path = __DIR__ . '/../_source/doctrine2/';
-set_include_path(get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR, array(
-    $path . 'lib'
-)));
-
-require_once $path . 'lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
+$path = __DIR__ . '/../../_source/Doctrine/';
+require_once $path . 'Common/ClassLoader.php';
 
 $configFile = __DIR__ . '/doctrine-cli-config.php';
 

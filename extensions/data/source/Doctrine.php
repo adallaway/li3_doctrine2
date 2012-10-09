@@ -62,10 +62,10 @@ class Doctrine extends \lithium\data\Source {
 	 * @filter
 	 */
 	protected function createEntityManager() {
-		$doctrinePath = dirname(dirname(dirname(dirname(__FILE__)))) . '/_source/doctrine2';
-		require_once($doctrinePath . '/lib/Doctrine/ORM/Tools/Setup.php');
+		$doctrinePath = dirname(dirname(dirname(dirname(__FILE__)))) . '/../_source';
+		require_once($doctrinePath . '/Doctrine/ORM/Tools/Setup.php');
 
-		Setup::registerAutoloadGit($doctrinePath);
+		Setup::registerAutoloadDirectory($doctrinePath);
 
 		$configuration = Setup::createAnnotationMetadataConfiguration(
 			array($this->_config['models']),
