@@ -192,7 +192,6 @@ abstract class BaseEntity extends \lithium\data\Entity implements IModel {
 		if ($useWhitelist) {
 			$data = array_intersect_key($data, array_flip($whitelist));
 		}
-
 		foreach($data as $field => $value) {
 			if (!is_string($field) || !in_array($field, $this->_getEntityFields())) {
 				continue;
@@ -218,10 +217,41 @@ abstract class BaseEntity extends \lithium\data\Entity implements IModel {
 	public function data($name = null, $allProperties = false) {
 		$data = $this->_getData($allProperties);
 		if (isset($name)) {
-			return array_key_exists($name, $data) ? $data[$name] : null;
+		  if(strpos($name, '.'))
+      {
+        return $this->_getNested($name);
+      }
+      else
+			  return array_key_exists($name, $data) ? $data[$name] : null;
 		}
 		return $data;
 	}
+  
+  protected function _getNested($name)
+  {
+    $current = $this;
+    $null = null;
+    $path = explode('.', $name);
+    $length = count($path) - 1;
+
+    $method = 'get' . Inflector::camelize($path[0]);
+      
+    if(method_exists($this, $method) && is_callable(array($this, $method)))
+      $nestedobj = $this->{$method}();
+    else
+      return null;
+    
+    $methodvar = 'get' . Inflector::camelize($path[1]);
+    
+    if(method_exists($nestedobj, $methodvar) && is_callable(array($nestedobj, $methodvar)))
+    {
+      return $nestedobj->{$methodvar}();
+    }
+    else
+      return null;
+    
+    return null;
+  }
 
 	/**
 	 * Get the entity fields
