@@ -283,6 +283,7 @@ abstract class BaseEntity extends \lithium\data\Entity implements IModel {
 	    }
 	    
 	    $set_method = 'set'.Inflector::camelize($association);
+	    $get_method = 'get'.Inflector::camelize($association);
 	    if(method_exists($this, $set_method) && is_callable(array($this, $set_method)))
 	    {
 	      $this->{$set_method}($record_object);
@@ -292,18 +293,19 @@ abstract class BaseEntity extends \lithium\data\Entity implements IModel {
 	      $this->{$association} = $record_object;
 	    }
 	    
-	    // Don't try to persist the collections:
-	    if(get_class($record_object) != 'Doctrine\Common\Collections\ArrayCollection')
+	    // Persist any collection items:
+	    if($entity_associations[$association]['is_collection'])
 	    {
-  	    $get_method = 'get'.Inflector::camelize($association);
-  	    if(method_exists($this, $get_method) && is_callable(array($this, $get_method)))
-  	    {
-  	      static::getEntityManager()->persist($this->{$get_method}());
-  	    }
-  	    else if(property_exists($this, $association))
-  	    {
-  	      static::getEntityManager()->persist($this->{$association});
-  	    }
+	      foreach($record_object as &$collection_item)
+	      {
+	        static::getEntityManager()->persist($collection_item);
+	      }
+	    }
+	    
+	    // Persist single item:
+	    else
+	    {
+  	    static::getEntityManager()->persist($record_object);
 	    }
 	  }
 	}
